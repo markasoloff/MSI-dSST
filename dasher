@@ -1,0 +1,83 @@
+//Opening lines specifying file IDs & folder IDs have been omitted from this document. See "Dasher Input Sheet 2.1" in Gdrive for full code.
+
+
+var thisSS = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+  
+  var allDashNames = thisSS.getRange('D3:D28').getValues();
+  //looks at all the partner names you pasted into column A of Dasher (the dSST creation program).  
+  var allEgrNames = thisSS.getRange('E3:E28').getValues();
+  var allAP1Names = thisSS.getRange('F3:F28').getValues();
+  var allAP2Names = thisSS.getRange('G3:G28').getValues();
+  var allAP3Names = thisSS.getRange('H3:H28').getValues();
+  var allAP4Names = thisSS.getRange('I3:I28').getValues();
+
+  //looks at all the partner names you pasted into a column of Dasher (the file creation program).
+  var selectedNames = []; 
+  var selectedTemplate = "";
+  var fileNamePrefix = "";
+
+if (allDashNames[0] != "") {
+   selectedNames = allDashNames;
+   selectedTemplate = dsst1TemplateFile;
+   fileNamePrefix = "MSI dSST Dashboard - ";
+//   Logger.log("The first statement won!");
+} 
+
+if (allEgrNames[0] != "") {
+   selectedNames = allEgrNames; 
+   selectedTemplate = egr1TemplateFile;
+   fileNamePrefix = "MSI Workbook - EGR - ";
+ //  Logger.log("The second statement won!");
+} 
+
+if (allAP1Names[0] != "") {
+   selectedNames = allAP1Names;
+   selectedTemplate = ap1TemplateFile;
+   fileNamePrefix = "MSI Workbook - AP1 - ";
+   //Logger.log("The third statement won!");
+}
+
+if (allAP2Names[0] != "") {
+   selectedNames = allAP2Names;
+   selectedTemplate = ap2TemplateFile;
+   fileNamePrefix = "MSI Workbook - AP2 - ";
+   //Logger.log("The fourth statement won!");
+}
+
+if (allAP3Names[0] != "") {
+   selectedNames = allAP3Names;
+   selectedTemplate = ap3TemplateFile;
+   fileNamePrefix = "MSI Workbook - AP3 - ";
+  // Logger.log("The fifth statement won!");
+}
+
+if (allAP4Names[0] != "") {
+   selectedNames = allAP4Names;
+   selectedTemplate = ap4TemplateFile;
+   fileNamePrefix = "MSI Workbook - AP4 - ";
+  // Logger.log("The sixth statement won!");
+
+}
+//Checks column D-I to see if text is present in row 3. The column that has text in row 3 will saves all the names in that column as "selectedNames". The appropriate template file and file name are then selected. NOTE: Dasher can only processs 1 column per run. All other columns must be clear of text from row 3 - row 28 or Dasher will fail.
+
+  var filterArray=(a,b)=>{return a.filter((e)=>{return e!=b})} 
+  
+  var filteredNames = filterArray(selectedNames,"");
+  //Removes empty spots from the array we made from the partner names in case you entered less than 25 names.
+
+  var arrLength = filteredNames.length;
+//Counts the number of names. This will be used to create a file for each number.
+
+for (var i = 0; i < arrLength; i = i + 1){
+  var partnerName = filteredNames[i]
+  var stringyName = partnerName.toString();
+//Cycles through the names in column A & converts them into usable text.
+
+var newFileID = DriveApp.getFileById(selectedTemplate).makeCopy(fileNamePrefix+stringyName, sliTestsFold).getId();
+
+//Opens template file, makes a copy with the appropriate text prefix (e.g. "MSI dSST Dashboard) followed by the partner name. 
+  SpreadsheetApp.openById(newFileID).getSheets()[0].getRange('C1').setValue(stringyName);
+//Opens newly created file, updates that file's cell C1 with partner name. C1 typically pulls data from the Central Database, using the partner name as the key to the appropriate data. 
+ Logger.log(selectedNames);
+    }
+  }
